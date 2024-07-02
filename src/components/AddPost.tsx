@@ -15,10 +15,11 @@ function AddPost() {
 
       {/* post */}
       <div className="flex-1">
-        <div className="flex  gap-4">
+        <form action={""} className="flex  gap-4">
           <textarea
             placeholder="What's on your mind?"
             className="bg-slate-100 rounded-lg flex-1 p-2"
+            name="description"
           ></textarea>
           <Image
             src="/emoji.png"
@@ -27,7 +28,9 @@ function AddPost() {
             className="w-5 h-5 cursor-pointer self-end"
             alt=""
           ></Image>
-        </div>
+
+          <button>Send</button>
+        </form>
         {/* post options  */}
         <div className="flex items-center gap-4 mt-4 text-gray-400 flex-wrap">
           <div className="flex items-center gap-2 cursor-pointer">

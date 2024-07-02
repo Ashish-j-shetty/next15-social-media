@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String          @id
+  username               String?         @unique
+  name                   String?
+  avatar                 String?
+  cover                  String?
+  surname                String?
+  description            String?
+  city                   String?
+  school                 String?
+  website                String?
+  work                   String?
+  createdAt              DateTime        @default(now())
+  posts                  Post[]
+  likes                  Like[]
+  comments               Comment[]
+  followers              Follower[]      @relation("UserFollowers")
+  followings             Follower[]      @relation("UserFollowings")
+  followRequestsSent     FollowRequest[] @relation("FollowRequestsSent")
+  followRequestsRecieved FollowRequest[] @relation("FollowRequestsRecieved")
+  blocks                 Block[]         @relation("BlocksSent")
+  blockedBy              Block[]         @relation("BlocksRecieved")
+  stories                Story[]
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  image       String?
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes       Like[]
+  comments    Comment[]
+}
+
+model Comment {
+  id          String   @id @default(uuid())
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Like        Like[]
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+}
+
+model Follower {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  followerId  String
+  follower    User     @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("UserFollowings", fields: [followingId], references: [id], onDelete: Cascade)
+}
+
+model FollowRequest {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  senderId   String
+  sender     User     @relation("FollowRequestsSent", fields: [senderId], references: [id], onDelete: Cascade)
+  recieverId String
+  reciever   User     @relation("FollowRequestsRecieved", fields: [recieverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, recieverId])
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  blockerId String
+  blocker   User     @relation("BlocksSent", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId String
+  blocked   User     @relation("BlocksRecieved", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockedId, blockerId])
+}
+
+model Story {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image     String
+}
