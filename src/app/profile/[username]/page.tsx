@@ -1,9 +1,49 @@
-import Feed from "@/components/Feed";
-import LeftMenu from "@/components/LeftMenu";
-import RightMenu from "@/components/RightMenu";
+import Feed from "@/components/feed/Feed";
+import LeftMenu from "@/components/leftMenu/LeftMenu";
+import RightMenu from "@/components/rightMenu/RightMenu";
+import prisma from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 
-const UserProfile = () => {
+const UserProfile = async ({ params }: { params: { username: string } }) => {
+  const username = params.username;
+  const user = await prisma.user.findFirst({
+    where: {
+      username,
+    },
+    include: {
+      _count: {
+        select: {
+          followers: true,
+          followings: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  if (!user) return notFound();
+
+  const { userId: currentUserId } = auth();
+
+  let isBlocked;
+  if (currentUserId) {
+    const res = await prisma.block.findFirst({
+      where: {
+        blockedId: currentUserId,
+        blockerId: user.id,
+      },
+    });
+    if (res) isBlocked = true;
+  } else {
+    isBlocked = false;
+  }
+
+  console.log({ isBlocked });
+
+  if (isBlocked) return notFound();
+
   return (
     <div className="flex gap-6 p-6">
       <div className="hidden xl:block w-[20%]">
@@ -15,35 +55,33 @@ const UserProfile = () => {
             <div className="flex flex-col items-center justify-center">
               <div className="w-full h-64 relative">
                 <Image
-                  src={
-                    "https://images.pexels.com/photos/25004848/pexels-photo-25004848/free-photo-of-sunset-sea-friends.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
-                  }
+                  src={user.cover || "/noCover.png"}
                   className="rounded-md object-cover"
                   fill
                   alt=""
                 />
                 <Image
-                  src={
-                    "https://images.pexels.com/photos/21945949/pexels-photo-21945949/free-photo-of-a-woman-looking-out-the-window.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
-                  }
+                  src={user.avatar || "/noAvatar.png"}
                   className=" w-32 h-32 absolute rounded-full left-0 right-0 m-auto -bottom-16 ring-4 ring-white z-10 object-cover"
                   alt=""
                   height={128}
                   width={128}
                 />
               </div>
-              <h1 className="mt-20 mb-4 text-2xl font-medium">Ashish Shetty</h1>
+              <h1 className="mt-20 mb-4 text-2xl font-medium">
+                {user.name} {user.surname}
+              </h1>
               <div className="flex items-center justify-center mb-4 gap-12 ">
                 <div className="flex flex-col  items-center">
-                  <span className="font-medium">124</span>
+                  <span className="font-medium">{user._count.posts}</span>
                   <span className="text-sm">Posts</span>
                 </div>
                 <div className="flex flex-col items-center ">
-                  <span className="font-medium">1.4k</span>
+                  <span className="font-medium">{user._count.followers}</span>
                   <span className="text-sm">Followers</span>
                 </div>
                 <div className="flex flex-col items-center">
-                  <span className="font-medium">1.5k</span>
+                  <span className="font-medium">{user._count.followings}</span>
                   <span className="text-sm">Following</span>
                 </div>
               </div>
@@ -53,7 +91,7 @@ const UserProfile = () => {
         </div>
       </div>
       <div className="hidden lg:block w-[30%] xl:w-[30%]">
-        <RightMenu userId="test" />
+        <RightMenu user={user} />
       </div>
     </div>
   );
