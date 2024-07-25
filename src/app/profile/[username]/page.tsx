@@ -40,8 +40,6 @@ const UserProfile = async ({ params }: { params: { username: string } }) => {
     isBlocked = false;
   }
 
-  console.log({ isBlocked });
-
   if (isBlocked) return notFound();
 
   return (

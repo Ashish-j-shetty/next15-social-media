@@ -1,7 +1,27 @@
-import Image from "next/image";
+import prisma from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
+import FriendRequestList from "./FriendRequestList";
 
-function FriendRequests() {
+async function FriendRequests() {
+  const { userId } = auth();
+
+  if (!userId) {
+    return null;
+  }
+
+  const friendRequests = await prisma.followRequest.findMany({
+    where: {
+      recieverId: userId,
+    },
+    include: {
+      sender: true,
+    },
+    take: 3,
+  });
+
+  if (friendRequests.length === 0) return null;
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4">
       {/* TOP  */}
@@ -12,96 +32,7 @@ function FriendRequests() {
         </Link>
       </div>
       {/* USER  */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Image
-            src={
-              "https://images.pexels.com/photos/21945949/pexels-photo-21945949/free-photo-of-a-woman-looking-out-the-window.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
-            }
-            alt=""
-            height={40}
-            width={40}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span className="font-semibold ">Wayne Burton</span>
-        </div>
-        <div className="flex gap-3 justify-end">
-          <Image
-            src={"/accept.png"}
-            alt=""
-            height={20}
-            width={20}
-            className="cursor-pointer"
-          />
-          <Image
-            src={"/reject.png"}
-            alt=""
-            height={20}
-            width={20}
-            className="cursor-pointer"
-          />
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Image
-            src={
-              "https://images.pexels.com/photos/21945949/pexels-photo-21945949/free-photo-of-a-woman-looking-out-the-window.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
-            }
-            alt=""
-            height={40}
-            width={40}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span className="font-semibold ">Wayne Burton</span>
-        </div>
-        <div className="flex gap-3 justify-end">
-          <Image
-            src={"/accept.png"}
-            alt=""
-            height={20}
-            width={20}
-            className="cursor-pointer"
-          />
-          <Image
-            src={"/reject.png"}
-            alt=""
-            height={20}
-            width={20}
-            className="cursor-pointer"
-          />
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Image
-            src={
-              "https://images.pexels.com/photos/21945949/pexels-photo-21945949/free-photo-of-a-woman-looking-out-the-window.jpeg?auto=compress&cs=tinysrgb&w=800&lazy=load"
-            }
-            alt=""
-            height={40}
-            width={40}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span className="font-semibold ">Wayne Burton</span>
-        </div>
-        <div className="flex gap-3 justify-end">
-          <Image
-            src={"/accept.png"}
-            alt=""
-            height={20}
-            width={20}
-            className="cursor-pointer"
-          />
-          <Image
-            src={"/reject.png"}
-            alt=""
-            height={20}
-            width={20}
-            className="cursor-pointer"
-          />
-        </div>
-      </div>
+      <FriendRequestList requests={friendRequests} />
     </div>
   );
 }

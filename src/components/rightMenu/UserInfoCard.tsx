@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import UserInfoCardInteraction from "./UserInfoCardInteraction";
+import UpdateUser from "./UpdateUser";
 
 async function UserInfoCard({ user }: { user: User }) {
   let isBlocked = false;
@@ -58,9 +59,13 @@ async function UserInfoCard({ user }: { user: User }) {
       {/* TOP  */}
       <div className="flex justify-between items-center font-medium">
         <span className="text-gray-500">User Information</span>
-        <Link href={"/"} className="text-blue-500 text-xs">
-          See All
-        </Link>
+        {currentUserId === userId ? (
+          <UpdateUser user={user} />
+        ) : (
+          <Link href={"/"} className="text-blue-500 text-xs">
+            See All
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-col gap-4 text-gray-500">
@@ -111,13 +116,14 @@ async function UserInfoCard({ user }: { user: User }) {
           </div>
         </div>
 
-        <UserInfoCardInteraction
-          userId={userId}
-          currentUserId={currentUserId}
-          isUserBlocked={isBlocked}
-          isFollowing={isFollowing}
-          isFollowRequestSent={isFollowRequestSent}
-        />
+        {currentUserId && currentUserId !== userId && (
+          <UserInfoCardInteraction
+            userId={userId}
+            isUserBlocked={isBlocked}
+            isFollowing={isFollowing}
+            isFollowRequestSent={isFollowRequestSent}
+          />
+        )}
       </div>
     </div>
   );
