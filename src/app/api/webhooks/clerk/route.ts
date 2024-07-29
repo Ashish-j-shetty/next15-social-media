@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   if (!WEBHOOK_SECRET) {
     throw new Error(
-      "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
+      "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local",
     );
   }
 
@@ -53,8 +53,8 @@ export async function POST(req: Request) {
   // For this guide, you simply log the payload to the console
   const { id } = evt.data;
   const eventType = evt.type;
-  // console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
-  // console.log('Webhook body:', body)
+  // console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
+  // console.log("Webhook body:", body);
 
   if (eventType === "user.created") {
     try {
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       });
       return new Response("User has been updated!", { status: 200 });
     } catch (err) {
-      console.log(err);
+      console.log("Failed to Update user", err);
       return new Response("Failed to update the user!", { status: 500 });
     }
   }

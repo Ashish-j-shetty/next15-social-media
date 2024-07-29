@@ -112,13 +112,12 @@ export const acceptFollowRequest = async (userId: string) => {
   try {
     const existingFollowRequest = await prisma.followRequest.findFirst({
       where: {
-        recieverId: currentUserId,
-        senderId: userId,
+        recieverId: userId,
+        senderId: currentUserId,
       },
     });
 
     if (existingFollowRequest) {
-      console.log({ existingFollowRequest });
       await prisma.followRequest.delete({
         where: {
           id: existingFollowRequest.id,
@@ -128,8 +127,8 @@ export const acceptFollowRequest = async (userId: string) => {
 
     await prisma.follower.create({
       data: {
-        followerId: userId,
-        followingId: currentUserId,
+        followerId: currentUserId,
+        followingId: userId,
       },
     });
   } catch (error) {
@@ -147,8 +146,8 @@ export const declineFollowRequest = async (userId: string) => {
   try {
     const existingFollowRequest = await prisma.followRequest.findFirst({
       where: {
-        recieverId: currentUserId,
-        senderId: userId,
+        recieverId: userId,
+        senderId: currentUserId,
       },
     });
 
@@ -193,7 +192,6 @@ export const updateProfile = async (
   });
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors);
     return { success: false, error: true };
   }
 
@@ -214,5 +212,65 @@ export const updateProfile = async (
   } catch (error) {
     console.log("something went wrong !");
     return { success: false, error: true };
+  }
+};
+
+export const swtichLike = async (postId: string) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    throw new Error("User not authenticated");
+  }
+
+  try {
+    const likeInfo = await prisma.like.findFirst({
+      where: {
+        postId: postId,
+        userId: currentUserId,
+      },
+    });
+
+    if (likeInfo) {
+      await prisma.like.delete({
+        where: {
+          id: likeInfo.id,
+        },
+      });
+    } else {
+      await prisma.like.create({
+        data: {
+          userId: currentUserId,
+          postId: postId,
+        },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong");
+  }
+};
+
+export const addComment = async (postId: string, desc: string) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) {
+    throw new Error("User is not Authenticated!!");
+  }
+
+  try {
+    const createdComments = await prisma.comment.create({
+      data: {
+        description: desc,
+        postId,
+        userId: currentUserId,
+      },
+      include: {
+        user: true,
+      },
+    });
+    return createdComments;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong!!");
   }
 };

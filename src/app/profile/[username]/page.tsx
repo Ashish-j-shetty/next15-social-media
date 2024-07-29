@@ -44,14 +44,14 @@ const UserProfile = async ({ params }: { params: { username: string } }) => {
 
   return (
     <div className="flex gap-6 p-6">
-      <div className="hidden xl:block w-[20%]">
+      <div className="hidden w-[20%] xl:block">
         <LeftMenu type="profile" />
       </div>
-      <div className="w-full lg:w-[70%] xl:w-[50%] ">
+      <div className="w-full lg:w-[70%] xl:w-[50%]">
         <div className="flex flex-col gap-6">
-          <div className=" flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
             <div className="flex flex-col items-center justify-center">
-              <div className="w-full h-64 relative">
+              <div className="relative h-64 w-full">
                 <Image
                   src={user.cover || "/noCover.png"}
                   className="rounded-md object-cover"
@@ -60,21 +60,21 @@ const UserProfile = async ({ params }: { params: { username: string } }) => {
                 />
                 <Image
                   src={user.avatar || "/noAvatar.png"}
-                  className=" w-32 h-32 absolute rounded-full left-0 right-0 m-auto -bottom-16 ring-4 ring-white z-10 object-cover"
+                  className="absolute -bottom-16 left-0 right-0 z-10 m-auto h-32 w-32 rounded-full object-cover ring-4 ring-white"
                   alt=""
                   height={128}
                   width={128}
                 />
               </div>
-              <h1 className="mt-20 mb-4 text-2xl font-medium">
+              <h1 className="mb-4 mt-20 text-2xl font-medium">
                 {user.name} {user.surname}
               </h1>
-              <div className="flex items-center justify-center mb-4 gap-12 ">
-                <div className="flex flex-col  items-center">
+              <div className="mb-4 flex items-center justify-center gap-12">
+                <div className="flex flex-col items-center">
                   <span className="font-medium">{user._count.posts}</span>
                   <span className="text-sm">Posts</span>
                 </div>
-                <div className="flex flex-col items-center ">
+                <div className="flex flex-col items-center">
                   <span className="font-medium">{user._count.followers}</span>
                   <span className="text-sm">Followers</span>
                 </div>
@@ -85,10 +85,10 @@ const UserProfile = async ({ params }: { params: { username: string } }) => {
               </div>
             </div>
           </div>
-          <Feed />
+          <Feed username={username} />
         </div>
       </div>
-      <div className="hidden lg:block w-[30%] xl:w-[30%]">
+      <div className="hidden w-[30%] lg:block xl:w-[30%]">
         <RightMenu user={user} />
       </div>
     </div>
