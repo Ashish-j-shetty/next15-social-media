@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./db";
 import z, { object } from "zod";
+import { revalidatePath } from "next/cache";
 
 /**
  * Toggles the follow status between the current authenticated user and another user.
@@ -272,5 +273,96 @@ export const addComment = async (postId: string, desc: string) => {
   } catch (error) {
     console.log(error);
     throw new Error("Something went wrong!!");
+  }
+};
+
+export const addPost = async ({
+  formData,
+  img,
+}: {
+  formData: FormData;
+  img: string;
+}) => {
+  const Desc = z.string().min(1).max(255);
+
+  const description = formData.get("description") as string;
+
+  const validateDesc = Desc.safeParse(description);
+  if (!validateDesc.success) {
+    console.log("invalid description");
+    return;
+  }
+
+  const { userId } = auth();
+  if (!userId) {
+    throw new Error("User is not Authenticated!!");
+  }
+
+  try {
+    await prisma.post.create({
+      data: {
+        description: validateDesc.data,
+        userId: userId,
+        image: img,
+      },
+    });
+    revalidatePath("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const addStory = async (img: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not Authenticated!!");
+  }
+
+  try {
+    const existingStory = await prisma.story.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (existingStory) {
+      await prisma.story.delete({
+        where: {
+          id: existingStory.id,
+        },
+      });
+    }
+
+    const createdStory = await prisma.story.create({
+      data: {
+        image: img,
+        userId: userId,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+      include: {
+        user: true,
+      },
+    });
+    return createdStory;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const deletePost = async (postId: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User not logged in!");
+  }
+
+  try {
+    await prisma.post.delete({
+      where: { id: postId, userId: userId },
+    });
+    revalidatePath("/");
+  } catch (error) {
+    console.log(error);
   }
 };

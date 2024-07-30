@@ -18,24 +18,24 @@ async function UserMediaCard({ user }: { user: User }) {
   });
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4">
+    <div className="flex flex-col gap-4 rounded-lg bg-white p-4 text-sm shadow-md">
       {/* TOP  */}
-      <div className="flex justify-between items-center font-medium">
+      <div className="flex items-center justify-between font-medium">
         <span className="text-gray-500">User Media</span>
-        <Link href={"/"} className="text-blue-500 text-xs">
+        <Link href={"/"} className="text-xs text-blue-500">
           See All
         </Link>
       </div>
       {/* BOTTOM  */}
-      <div className="flex gap-4 justify-betwen flex-wrap">
+      <div className="justify-betwen flex flex-wrap gap-4">
         {postsWithMedia.length
           ? postsWithMedia.map((post) => {
               return (
-                <div className="relative w-1/5 h-24" key={post.id}>
+                <div className="relative h-24 w-1/5" key={post.id}>
                   <Image
                     src={post.image!}
                     fill
-                    className="object-cover rounded-md"
+                    className="rounded-md object-cover"
                     alt=""
                   />
                 </div>
