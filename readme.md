@@ -7,10 +7,8 @@ Welcome to My Next.js App! This application is built using Next.js, Prisma, Cler
 - [Features](#features)
 - [Setup](#setup)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
   - [Environment Variables](#environment-variables)
   - [Ngrok Setup](#ngrok-setup)
-- [Usage](#usage)
 - [Technologies Used](#technologies-used)
 - [Contributing](#contributing)
 - [License](#license)
@@ -33,36 +31,11 @@ Welcome to My Next.js App! This application is built using Next.js, Prisma, Cler
 Ensure you have the following installed on your machine:
 
 - [Node.js](https://nodejs.org/) (v14 or later)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Ngrok](https://ngrok.com/) for port forwarding
 - A PostgreSQL database (or another database supported by Prisma)
-
-### Installation
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
-   cd your-repo-name
-   ```
-
-2. **Install dependencies:**
-
-   Using npm:
-
-   ```bash
-   npm install
-   ```
-
-   Using yarn:
-
-   ```bash
-   yarn install
-   ```
 
 ### Environment Variables
 
-Create a `.env` file in the root of your project and add the following environment variables:
+Create a `.env` file in the root of your project refer `.sample.env` and add the following environment variables:
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/mydatabase
@@ -95,39 +68,7 @@ Ngrok is used for port forwarding to enable Clerk webhooks in your local develop
 
    Log in to your Clerk dashboard and set the webhook URL to the ngrok forwarding URL followed by `/api/webhooks/clerk` (e.g., `https://abcdef.ngrok.io/api/webhooks/clerk`).
 
-## Usage
 
-### Development
-
-To run the application in development mode:
-
-```bash
-npm run dev
-```
-
-or
-
-```bash
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-### Production
-
-To build and start the application in production mode:
-
-```bash
-npm run build
-npm start
-```
-
-or
-
-```bash
-yarn build
-yarn start
-```
 
 ## Technologies Used
 
@@ -139,6 +80,7 @@ yarn start
 - **Eraser:** Diagram and schema generation tool.
 - **Cloudinary:** Cloud-based image and video management.
 - **Ngrok:** Tool for port forwarding, making webhooks possible in local development environments.
+- **pexels.com:** To get free images.
 
 ## Contributing
 
